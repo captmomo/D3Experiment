@@ -1,0 +1,50 @@
+{
+  "nodes": [
+    {
+      "name": "Product BOM",
+      "label": "BOM",
+      "id": 1,
+      "type":  "bom"
+    },
+    {
+      "name": "Material A",
+      "label": "Inventory Item Type",
+      "id": 2,
+      "type": "resource"
+    },
+    {
+      "name": "Material B",
+      "label": "Invetory Item Type",
+      "id": 3,
+      "type": "resource"
+    },
+    {
+      "name": "Supplier MAC",
+      "label": "Supplier",
+      "id": 4,
+      "type":  "supplier"
+    }
+  ],
+  "links": [
+    {
+      "source": 2,
+      "target": 1,
+      "type": "USED IN"
+    },
+    {
+      "source": 3,
+      "target": 1,
+      "type": "USED IN"
+    },
+    {
+      "source": 4,
+      "target": 2,
+      "type": "SUPPLIES"
+    },
+    {
+      "source": 4,
+      "target": 3,
+      "type": "SUPPLIES"
+    }
+  ]
+}
