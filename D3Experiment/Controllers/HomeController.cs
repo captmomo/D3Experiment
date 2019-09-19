@@ -30,10 +30,10 @@ namespace D3Experiment.Controllers
         public IActionResult Testing()
         {
             var nodelist = new List<NodeDTO>(){
-                new NodeDTO { Id = 1, Label = "test", Name = "Supplier ABC", Type = "supplier" },
-            new NodeDTO { Id = 2, Label = "test", Name = "Resource XYZ", Type = "resource" },
-            new NodeDTO { Id = 3, Label = "test", Name = "Resource ABC", Type = "resource" },
-            new NodeDTO { Id = 4, Label = "test", Name = "BOM #123", Type = "bom" }
+                new NodeDTO { Id = 1, Label = "Supplier", Name = "Supplier ABC", Colour = "red" },
+            new NodeDTO { Id = 2, Label = "Resource", Name = "Resource XYZ", Colour = "pink" },
+            new NodeDTO { Id = 3, Label = "Resource", Name = "Resource ABC", Colour = "pink" },
+            new NodeDTO { Id = 4, Label = "BOM", Name = "BOM #123", Colour = "blue" }
             };
             var linkList = new List<LinkDTO>()
             {

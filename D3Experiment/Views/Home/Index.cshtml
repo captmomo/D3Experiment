@@ -115,7 +115,7 @@
 
         node.append("circle")
             .attr("r", 5)
-            .style("fill", circleColour)
+            .style("fill", function (d, i) { return d.colour;})
             //    node.append("circle")
             //.attr("r", 5)
             //.style("fill", function (d, i) {return colors(i);})
