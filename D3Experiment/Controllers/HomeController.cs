@@ -46,7 +46,7 @@ namespace D3Experiment.Controllers
             var dict = new Dictionary<String, dynamic>();
             dict.Add("nodes", nodelist);
             dict.Add("links", linkList);
-            return new JsonResult(dict);
+            return Ok(dict);
         }
     }
 }
