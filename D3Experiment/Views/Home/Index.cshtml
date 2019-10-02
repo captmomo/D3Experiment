@@ -1,12 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style type="text/css">
         .node {
         }
@@ -17,8 +12,7 @@
             stroke-width: 1px;
         }
     </style>
-</head>
-</html>
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
@@ -216,9 +210,34 @@
             request.send();
         };
 
+        function status(response) {
+            if (response.status >= 200 && response.status < 300) {
+                return Promise.resolve(response)
+            } else {
+                return Promise.reject(new Error(response.statusText))
+            }
+        }
+
+        function json(response) {
+            return response.json()
+        }
+
+        let Test = function (url) {
+            fetch(url)
+            .then(status)
+            .then(json)
+            .then(function (data) {
+                console.log('Request succeeded with JSON response', data);
+            }).catch(function (error) {
+                console.log('Request failed', error);
+            });
+
+        }
+
+        /*https://developers.google.com/web/updates/2015/03/introduction-to-fetch*/
 /**/</script>
     <div>
-    <button onclick="buttonClick('@Url.Action("GetJson", "Home")')">Generate Graph</button>
-    <button onclick="AjaxGet('@Url.Action("GetJson", "Home")')">AJAX GET</button>
-        </div>
+        <button onclick="buttonClick('@Url.Action("GetJson", "Home")')">Generate Graph</button>
+        <button onclick="Test('@Url.Action("GetJson", "Home")')">AJAX GET</button>
+    </div>
 </body>
