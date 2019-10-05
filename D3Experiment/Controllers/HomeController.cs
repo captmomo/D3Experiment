@@ -15,6 +15,10 @@ namespace D3Experiment.Controllers
         {
             return View();
         }
+        public IActionResult ImageViewer()
+        {
+            return View();
+        }
 
         public IActionResult Privacy()
         {
