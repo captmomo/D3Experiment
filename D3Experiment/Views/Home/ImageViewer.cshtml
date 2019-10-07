@@ -40,6 +40,42 @@
         viewer.destroy();
     }
 
+    let sendImage = function (elementId) {
+        var preview = document.getElementById(elementId);
+        console.log(preview.src);
+        var payload = { "ImageString" : preview.src };
+        Test("@Url.Action("PostImage", "Home")", payload);
+
+    }
+    function status(response) {
+        if (response.status >= 200 && response.status < 300) {
+            return Promise.resolve(response)
+        } else {
+            return Promise.reject(new Error(response.statusText))
+        }
+    }
+
+    function json(response) {
+        return response.json()
+    }
+
+
+    let Test = function (url, payload) {
+        fetch(url, {
+            method: 'post',
+                headers: {
+      'Content-Type': 'application/json'
+    },
+            body: JSON.stringify(payload)
+        })
+            .then(json)
+            .then(function (data) {
+                console.log('Request succeeded with JSON response', data);
+            })
+            .catch(function (error) {
+                console.log('Request failed', error);
+            });
+    }
 </script>
 <h1>ImageViewer</h1>
 
@@ -54,4 +90,5 @@
 <div>
     <button onclick="openViewer('preview')">Open Viewer</button>
     <button onclick="destroyViewer()">Close Viewer</button>
+    <button onclick="sendImage('preview')">Send Image</button>
 </div>

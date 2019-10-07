@@ -52,5 +52,18 @@ namespace D3Experiment.Controllers
             dict.Add("links", linkList);
             return Ok(dict);
         }
+        [HttpPost, ActionName("PostImage")]
+        public IActionResult PostImage([FromBody]myImage myImage)
+        {
+            var testing = myImage.ImageString;
+            var test = testing.Length;
+            return Ok(test);
+        }
+
+       
+    }
+    public class myImage
+    {
+        public string ImageString { get; set; }
     }
 }
