@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using D3Experiment.Models;
 using Newtonsoft.Json;
+using Media.Images.Core.Interfaces;
 
 namespace D3Experiment.Controllers
 {
     public class HomeController : Controller
     {
+        private IImageProcess _imageProcess;
+
+        public HomeController(IImageProcess imageProcess)
+        {
+            _imageProcess = imageProcess ?? throw new ArgumentNullException(nameof(imageProcess));
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -57,10 +65,25 @@ namespace D3Experiment.Controllers
         {
             var testing = myImage.ImageString;
             var test = testing.Length;
-            return Ok(test);
+            var result = _imageProcess.ResizeImage(myImage.ImageString, 50, 50, "test");
+            if (result.IsSuccess)
+                return Ok(new myImage() { ImageString = result.Value.GetDataUri() });
+            return StatusCode(503);
         }
 
-       
+        [HttpPost, ActionName("ImageResult")]
+        public IActionResult ImageResult([FromBody]myImage myImage)
+        {
+            var testing = myImage.ImageString;
+            var test = testing.Length;
+            var result = _imageProcess.ResizeImage(myImage.ImageString, 50, 50, "test");
+            if (result.IsSuccess)
+            {
+                byte[] fileBytes = Convert.FromBase64String(result.Value.GetBase64String());
+                return File(fileBytes, result.Value.GetMimeTypes().FirstOrDefault());
+            }
+            return StatusCode(503);
+        }
     }
     public class myImage
     {

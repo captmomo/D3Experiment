@@ -51,7 +51,7 @@
         var simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function (d) { return d.name; }).distance(100).strength(1))
             .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2));
+            .force("center", d3.forceCenter(width / 2, height / 2)).alphaTarget(1);
 
 
 
@@ -98,7 +98,7 @@
                 .text(function (d) { return d.purpose });
 
             node = svg.selectAll(".node")
-                .data(nodes)
+                .data(nodes, function (d) { return d.id; })
                 .enter()
                 .append("g")
                 .attr("class", "node")
@@ -122,12 +122,17 @@
                 .attr("dy", -3)
                 .text(function (d) { return d.name + ":" + d.label; });
 
+            node.exit().remove();
+            link.exit().remove();
+
             simulation
                 .nodes(nodes)
                 .on("tick", ticked);
 
             simulation.force("link")
                 .links(links);
+
+            simulation.alphaTarget(1).restart();
         }
         //Function to choose what color circle we have
         //Let's return blue for males and red for females
@@ -185,7 +190,10 @@
         let buttonClick = function (data) {
             d3.json(data, function (error, graph) {
                 if (error) throw error;
-                update(graph.links, graph.nodes);
+               
+                graphLinks = graph.links;
+                graphNodes = graph.nodes;
+                update(graphLinks, graphNodes);
             })
         };
 
@@ -222,22 +230,42 @@
             return response.json()
         }
 
+        let graphLinks = [];
+        let graphNodes = [];
         let Test = function (url) {
             fetch(url)
             .then(status)
             .then(json)
             .then(function (data) {
                 console.log('Request succeeded with JSON response', data);
+                graphLinks.push(...data.links);
+                graphNodes.push(...data.nodes);
+                update(graphLinks, graphNodes);
             }).catch(function (error) {
                 console.log('Request failed', error);
             });
 
         }
 
+        let PushNode = function (name, colour, label) {
+            var newNode = { id: graphLinks.length + 1, name: name, colour: colour, label: label };
+            graphNodes.push(newNode);
+        };
+        let PushLink = function (name, target, purpose) {
+            var newLink = { source: name, target: target, purpose: purpose };
+            graphLinks.push(newLink);
+        };
+        let PushNewPoint = function () {
+            PushNode("test", "red", "supplier");
+            PushLink("test", "Supplier ABC", "test");
+            var svg = d3.select("svg").transition();
+            update(graphLinks, graphNodes)
+        };
+
         /*https://developers.google.com/web/updates/2015/03/introduction-to-fetch*/
 /**/</script>
     <div>
         <button onclick="buttonClick('@Url.Action("GetJson", "Home")')">Generate Graph</button>
-        <button onclick="Test('@Url.Action("GetJson", "Home")')">AJAX GET</button>
+        <button onclick="PushNewPoint()">AJAX GET</button>
     </div>
 </body>

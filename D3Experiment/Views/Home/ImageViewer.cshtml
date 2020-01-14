@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "ImageViewer";
 }
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <link href="~/lib/viewerjs/viewer.css" rel="stylesheet">
 <script src="~/lib/viewerjs/viewer.js"></script>
 <script>
@@ -11,7 +13,6 @@
         var reader = new FileReader();
 
         reader.addEventListener("load", function () {
-            console.log(reader.result);
             preview.src = reader.result;
 
         }, false);
@@ -36,6 +37,22 @@
 
     }
 
+    let openGallery = function () {
+
+        const gallery = new Viewer(document.getElementById('images'), {
+            hidden: function(){
+                gallery.destroy();
+            },
+            viewed() {
+                gallery.zoomTo(1);
+            },
+
+        });
+        gallery.show();
+    };
+    let destroyGallery = function () {
+        gallery.destroy();
+    }
     let destroyViewer = function () {
         viewer.destroy();
     }
@@ -44,7 +61,19 @@
         var preview = document.getElementById(elementId);
         console.log(preview.src);
         var payload = { "ImageString" : preview.src };
-        Test("@Url.Action("PostImage", "Home")", payload);
+        PostImageGetJson("@Url.Action("PostImage", "Home")", payload)
+            .then(function (data) {
+                if (data.result) {
+
+                    document.getElementById("image1").src = data.response.imageString;
+                };
+            });
+        PostImageGetBlob("@Url.Action("ImageResult", "Home")", payload)
+            .then(function (data) {
+                if (data.result) {
+                    document.getElementById("image2").src = URL.createObjectURL(data.response);
+                }
+            });;
 
     }
     function status(response) {
@@ -60,20 +89,42 @@
     }
 
 
-    let Test = function (url, payload) {
-        fetch(url, {
+    let PostImageGetJson = function (url, payload) {
+        return fetch(url, {
             method: 'post',
                 headers: {
       'Content-Type': 'application/json'
     },
             body: JSON.stringify(payload)
         })
+            .then(status)
             .then(json)
             .then(function (data) {
-                console.log('Request succeeded with JSON response', data);
+                console.log('Request succeeded with response', data);
+                return { result: true, response: data };
             })
             .catch(function (error) {
                 console.log('Request failed', error);
+                return { result: false, response: error };
+            });
+    }
+    let PostImageGetBlob = function (url, payload) {
+        return fetch(url, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(status)
+            .then((response)=> response.blob())
+            .then(function (data) {
+                console.log('Request succeeded with response', data);
+                return { result: true, response: data };
+            })
+            .catch(function (error) {
+                console.log('Request failed', error);
+                return { result: false, response: error };
             });
     }
 </script>
@@ -84,11 +135,48 @@
     <input type="file" onchange="previewFile()"><br>
 </div>
 <div>
+    <ul id="images">
+        <li>
 
-    <img id="preview" src="" height="200" alt="Image preview...">
+            <img id="preview" src="" height="200" alt="Image preview..." />
+        </li>
+
+        <li>
+            <img id="image1" src="" style="width:50%; height:50%" alt="data uri" />
+        </li>
+        <li>
+            <img id="image2" src="" style="width:50%; height:50%" alt="file result" />
+        </li>
+    </ul>
 </div>
+
+
 <div>
     <button onclick="openViewer('preview')">Open Viewer</button>
     <button onclick="destroyViewer()">Close Viewer</button>
     <button onclick="sendImage('preview')">Send Image</button>
+    <button data-enable="modal" data-method="show" onclick="openGallery()">Open Gallery</button>
+</div>
+
+<button type="button" class="btn btn-primary" data-target="#modal" data-toggle="modal" onclick="openGallery()">
+    Launch the demo
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="modal" role="dialog" aria-labelledby="modalLabel" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Viewer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-container">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
