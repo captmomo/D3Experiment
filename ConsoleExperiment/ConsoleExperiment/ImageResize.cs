@@ -48,7 +48,7 @@ namespace ConsoleExperiment
                 int.TryParse(height, out outHeight);
             }
 
-            ImageFormatManager format = new SixLabors.ImageSharp.Formats.ImageFormatManager();
+            
             IImageFormat type;
             using (MemoryStream ms = new MemoryStream())
             {

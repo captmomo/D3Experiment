@@ -27,6 +27,7 @@ namespace ConsoleExperiment
             Redirects.Register(app);
             ImageResize.Register(app);
             Encryption.Register(app);
+            ConfigEncrypt.Register(app);
 
             app.Command("help", cmd =>
             {
